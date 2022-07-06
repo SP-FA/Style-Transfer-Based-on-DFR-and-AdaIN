@@ -8,7 +8,7 @@ from torchvision import transforms
 from torchvision.utils import save_image
 
 from package import net
-from package.function import adaptive_instance_normalization
+from package.function import _AdaIN as adain
 
 import time
 
@@ -39,7 +39,7 @@ def style_transfer(vgg, decoder, content, style, alpha=1.0,
             feat = feat + w * base_feat[i:i + 1]
         content_f = content_f[0:1]
     else:
-        feat = adaptive_instance_normalization(content_f, style_f)
+        feat = adain(content_f, style_f)
     feat = feat * alpha + content_f * (1 - alpha)
     return decoder(feat)
 
@@ -70,7 +70,7 @@ parser.add_argument('--style', type=str, help='File path to the style image, or 
                     images separated by commas if you want to do style interpolation or spatial control')
 parser.add_argument('--style_dir', type=str, help='Directory path to a batch of style images')
 parser.add_argument('--vgg', type=str, default='models/vgg_normalised.pth')
-parser.add_argument('--decoder', type=str, default='models/decoder.pth')
+parser.add_argument('--decoder', type=str, default='models/decoder_iter_160000.pth.tar')
 
 # Additional options
 parser.add_argument('--content_size', type=int, default=512, help='New (minimum) size for the content image, \
@@ -126,7 +126,6 @@ for content_path in content_paths:
 
     else:  # process one content and one style
         for style_path in style_paths:
-            print(type(content_path))
             # if type(content_path).__name__ == 'list':
             #     path = content_path[0]
             # else:

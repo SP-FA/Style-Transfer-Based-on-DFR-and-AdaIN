@@ -1,8 +1,9 @@
 import torch.nn as nn
+from typing import *
 
-from .function import adaptive_instance_normalization as adain
-from .function import calc_mean_std
-from .rotation import extensive_rotation_tensor
+from .function import _AdaIN as adain
+from .function import _calc_mean_std
+from .rotation import _DFR as dfr
 
 decoder = nn.Sequential(
     nn.ReflectionPad2d((1, 1, 1, 1)),
@@ -96,72 +97,74 @@ vgg = nn.Sequential(
 class Net(nn.Module):
     def __init__(self, encoder, decoder):
         super(Net, self).__init__()
-        enc_layers = list(encoder.children())
-        self.enc_1 = nn.Sequential(*enc_layers[:4])  # input -> relu1_1
-        self.enc_2 = nn.Sequential(*enc_layers[4:11])  # relu1_1 -> relu2_1
-        self.enc_3 = nn.Sequential(*enc_layers[11:18])  # relu2_1 -> relu3_1
-        self.enc_4 = nn.Sequential(*enc_layers[18:31])  # relu3_1 -> relu4_1
+        layers = list(encoder.children())
+        self.step1 = nn.Sequential(*layers[:4])  # input   -> relu1_1
+        self.step2 = nn.Sequential(*layers[4:11])  # relu1_1 -> relu2_1
+        self.step3 = nn.Sequential(*layers[11:18])  # relu2_1 -> relu3_1
+        self.step4 = nn.Sequential(*layers[18:31])  # relu3_1 -> relu4_1
         self.decoder = decoder
-        self.mse_loss = nn.MSELoss()
+        self.MSELoss = nn.MSELoss()
 
         # fix the encoder
-        for name in ['enc_1', 'enc_2', 'enc_3', 'enc_4']:
+        for name in ['step1', 'step2', 'step3', 'step4']:
             for param in getattr(self, name).parameters():
                 param.requires_grad = False
 
-    # extract relu1_1, relu2_1, relu3_1, relu4_1 from input image
-    def encode_with_intermediate(self, input):
+    def encode(self, input, last: bool = True) -> List:
+        """
+        Extract step 1-4 from input image.
+
+        PARAMETER:
+          @ last: only extract step 4
+
+        RETURN:
+          A list which elements stand for step 1-4 orderly.
+        """
         results = [input]
         for i in range(4):
-            func = getattr(self, 'enc_{:d}'.format(i + 1))
+            func = getattr(self, 'step{:d}'.format(i + 1))
             results.append(func(results[-1]))
-        return results[1:]
+        if last:
+            return results[-1]
+        else:
+            return results[1:]
 
-    # extract relu4_1 from input image
-    def encode(self, input):
-        for i in range(4):
-            input = getattr(self, 'enc_{:d}'.format(i + 1))(input)
-        return input
-
-    def calc_content_loss(self, input, target):
+    def _calc_content_loss(self, input, target):
         assert (input.size() == target.size())
         assert (target.requires_grad is False)
-        return self.mse_loss(input, target)
+        return self.MSELoss(input, target)
 
-    def calc_style_loss(self, input, target):
+    def _calc_style_loss(self, input, target):
         assert (input.size() == target.size())
         assert (target.requires_grad is False)
-        input_mean, input_std = calc_mean_std(input)
-        target_mean, target_std = calc_mean_std(target)
-        return self.mse_loss(input_mean, target_mean) + \
-               self.mse_loss(input_std, target_std)
+        inputMean, inputStd = _calc_mean_std(input)
+        targetMean, targetStd = _calc_mean_std(target)
+        return self.MSELoss(inputMean, targetMean) + self.MSELoss(inputStd, targetStd)
 
-    def forward(self, content, style, alpha=1.0):
+    def forward(self, content, style, angles: List[float] = [0], alpha: float = 1.0):
+        """
+        PARAMETER:
+          @ content: content img
+          @ style: style img
+          @ angles: a list which elements are angles the matrix will rotate to.
+          @ alpha
+
+        RETURN:
+          content loss and style loss
+        """
         assert 0 <= alpha <= 1
-        content_feat = self.encode(content)
-        style_feats = self.encode_with_intermediate(style)
+        cFeat = self.encode(content)
+        sFeats = self.encode(style, False)
 
-        roted_style1 = style_feats[-1] # 原特征
-        roted_style2 = extensive_rotation_tensor(roted_style1, 90) # 旋转
-        roted_style3 = extensive_rotation_tensor(roted_style1, 180)
-        roted_style4 = extensive_rotation_tensor(roted_style1, 270)
+        rotFeat = sum(dfr(sFeats[-1], angles)) / len(angles)
+        adainFeat = adain(cFeat, rotFeat)
+        adainFeat = alpha * adainFeat + (1 - alpha) * cFeat
 
-        roted_style5 = extensive_rotation_tensor(roted_style1, 45)
-        roted_style6 = extensive_rotation_tensor(roted_style1, 90)
-        roted_style7 = extensive_rotation_tensor(roted_style1, 180)
-        roted_style8 = extensive_rotation_tensor(roted_style1, 270)
+        genImg = self.decoder(adainFeat)
+        gFeats = self.encode(genImg, False)
 
-        tot_rot_style = (roted_style1+roted_style2+roted_style3+roted_style4+roted_style5+roted_style6+roted_style7+roted_style8) / 8 # 求平均
-
-        t = adain(content_feat, tot_rot_style) # adaIN 层
-        t = alpha * t + (1 - alpha) * content_feat
-
-
-        g_t = self.decoder(t)
-        g_t_feats = self.encode_with_intermediate(g_t)
-
-        loss_c = self.calc_content_loss(g_t_feats[-1], t)
-        loss_s = self.calc_style_loss(g_t_feats[0], style_feats[0])
-        for i in range(1, 4):
-            loss_s += self.calc_style_loss(g_t_feats[i], style_feats[i])
-        return loss_c, loss_s
+        sLoss = 0
+        cLoss = self._calc_content_loss(gFeats[-1], adainFeat)
+        for i in range(4):
+            sLoss += self._calc_style_loss(gFeats[i], sFeats[i])
+        return cLoss, sLoss

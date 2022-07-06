@@ -88,7 +88,7 @@ if __name__ == "__main__":
     decoder = net.decoder
     vgg = net.vgg
 
-    vgg.load_state_dict(torch.load(args.vgg))
+    vgg.load_state_dict(torch.load(args.vgg), False)
     vgg = nn.Sequential(*list(vgg.children())[:31])
     network = net.Net(vgg, decoder)
     network.train()

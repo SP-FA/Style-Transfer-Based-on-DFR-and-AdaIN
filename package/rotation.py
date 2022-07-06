@@ -1,12 +1,19 @@
-import copy
+from typing import *
 from torchvision.transforms.functional import rotate
 
 
-def extensive_rotation_tensor(inputs, angles=None):
-    """Rotate tensor in arbitrary angles"""
-    final = copy.deepcopy(inputs)
+def _DFR(mat, angles: List[float]) -> List:
+    """
+    Rotate tensor with multiple angles.
 
-    for key, input in enumerate(inputs):
-        r_tensor = rotate(input, angles)
-        final[key] = r_tensor
-    return final
+    PARAMETER:
+      @ mat: input matrix
+      @ angles: a list of angles
+
+    RETURN:
+      A list witch each element is a rotated matrix.
+    """
+    mats = []
+    for angle in angles:
+        mats.append(rotate(mat, angle))
+    return mats
