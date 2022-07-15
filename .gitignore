@@ -1,4 +1,3 @@
-*.pth
 *.t7
 output/*
 .idea
