@@ -11,7 +11,7 @@ from torchvision import transforms
 from tqdm import tqdm
 
 from package import net
-from package.sampler import InfiniteSamplerWrapper
+from package.util import InfiniteSamplerWrapper
 
 
 def train_transform():
@@ -49,6 +49,7 @@ def adjust_learning_rate(optimizer, iteration_count):
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
+
 if __name__ == "__main__":
     cudnn.benchmark = True
     Image.MAX_IMAGE_PIXELS = None  # Disable DecompressionBombError
@@ -61,7 +62,7 @@ if __name__ == "__main__":
                         help='Directory path to a batch of content images')
     parser.add_argument('--style', type=str,
                         help='File path to the style image')
-    parser.add_argument('--vgg', type=str, default='models/vgg_normalised.pth')
+    parser.add_argument('--vgg', type=str, default='models/encoder.pth')
 
     # training options
     parser.add_argument('--save_dir', default='./experiments',
