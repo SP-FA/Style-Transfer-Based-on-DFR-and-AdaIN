@@ -15,7 +15,7 @@ def get_images(imgPath: str) -> dict:
     return images
 
 
-def get_iter(dataset, batch, threads):
+def get_iter(dataset, batch: int, threads: int):
     DL = DataLoader(dataset, batch_size=batch, sampler=SamplerWrapper(dataset), num_workers=threads)
     return iter(DL)
 

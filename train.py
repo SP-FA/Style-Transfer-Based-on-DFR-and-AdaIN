@@ -4,7 +4,6 @@ import argparse
 import torch
 import os
 
-from tensorboardX import SummaryWriter
 from torchvision import transforms
 from pathlib import Path
 from tqdm import tqdm
@@ -48,7 +47,6 @@ if __name__ == "__main__":
     save_dir = Path(args.save)
     log_dir.mkdir(exist_ok=True, parents=True)
     save_dir.mkdir(exist_ok=True, parents=True)
-    writer = SummaryWriter(log_dir=args.log)
 
     decoder = net.decoder
     vgg = net.vgg
@@ -79,12 +77,8 @@ if __name__ == "__main__":
         loss.backward()
         optimizer.step()
 
-        writer.add_scalar('loss_content', cLoss.item(), i + 1)
-        writer.add_scalar('loss_style', sLoss.item(), i + 1)
-
         if (i + 1) % args.save_interval == 0 or (i + 1) == args.epoch:
             state_dict = net.decoder.state_dict()
             for key in state_dict.keys():
                 state_dict[key] = state_dict[key].to(torch.device('cpu'))
             torch.save(state_dict, save_dir / 'decoder_iter_%d.pth' % (i + 1))
-    writer.close()
