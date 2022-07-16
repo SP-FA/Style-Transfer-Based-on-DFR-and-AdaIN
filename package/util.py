@@ -4,7 +4,7 @@ import numpy as np
 from torch.utils import data
 
 
-def get_images(imgFile:str) -> dict:
+def get_images(imgFile: str) -> dict:
     images = {}
     imgPath = os.listdir(imgFile)
     for i in imgPath:
