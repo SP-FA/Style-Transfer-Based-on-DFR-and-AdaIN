@@ -4,7 +4,7 @@
 ![https://img.shields.io/badge/pytorch-1.11.0-yellow](https://img.shields.io/badge/Pytorch-1.11.0-yellow)
 ![https://img.shields.io/badge/CUDA-11.3-brightgreen](https://img.shields.io/badge/CUDA-11.3-brightgreen)
 
-[zh-ch](./doc/zh-ch.md)
+[zh-CN](./doc/zh-ch.md)
 
 ![./sources/cover.png](./sources/cover.png)
 
@@ -45,6 +45,30 @@ Prepare the style images and content images, the default data path is `./input/c
 
 ### Train
 
+Run the following command to test:
+
+```commandline
+python train.py [--content content_path --style style_path --encoder encoder_path]
+```
+
+Optional parameters are shown in the following table:
+
+| Parameter      | Introduction                                                     |
+|----------------|------------------------------------------------------------------|
+| content        | Path to content images.                                          |
+| style          | Path to style images.                                            |
+| encoder        | Path of pre-training model. The default is `models/encoder.pth`. |
+| save           | Path for saving model. The default is `experiments`.             |
+| log            | Path for saving log. The default is `logs`.                      |
+| lr             | Learning rate                                                    |
+| decay          | The decay of learning rate                                       |
+| epoch          | The iteration number                                             |
+| batch          | The batch size                                                   |
+| content_weight | The weight of content loss.                                      |
+| style_weight   | The weight of style loss.                                        |
+| n_threads      | The number of threads.                                           |
+| save_interval  | How many iterations to save a model.                             |
+
 ### Test
 
 Run the following command to test:
@@ -55,17 +79,17 @@ python test.py [--content content_path --style style_path]
 
 Optional parameters are shown in the following table:
 
-| Parameter    | Introduction                                                     |
-|--------------|------------------------------------------------------------------|
-| content      | Path to the content image                                        |
-| style        | Style image path                                                 |
-| encoder      | Path to the encoder. The default is `models/encoder.pth`         |
-| decoder      | Path to the decoder. The default is `models/decoder.pth`         |
-| output       | Path to output the resulting image                               |
-| content_size | Specifies a size for the content image, default is 512           |
-| style_size   | Specifies a size for the style image, default is 512             |
-| save_ext     | The extension to use when saving the image                       |
-| alpha        | The degree of control style conversion should be between 0 and 1 |
+| Parameter    | Introduction                                                      |
+|--------------|-------------------------------------------------------------------|
+| content      | Path to the content image.                                        |
+| style        | Style image path.                                                 |
+| encoder      | Path to the encoder. The default is `models/encoder.pth`.         |
+| decoder      | Path to the decoder. The default is `models/decoder.pth`.         |
+| output       | Path to output the resulting image.                               |
+| content_size | Specifies a size for the content image. The default is 512.       |
+| style_size   | Specifies a size for the style image. The default is 512.         |
+| save_ext     | The extension to use when saving the image.                       |
+| alpha        | The degree of control style conversion should be between 0 and 1. |
 
 ## Reference
 

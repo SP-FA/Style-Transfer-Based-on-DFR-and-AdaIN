@@ -1,5 +1,5 @@
-from typing import *
 from torchvision.transforms.functional import rotate
+from typing import *
 
 
 def _DFR(mat, angles: List[float]) -> List:

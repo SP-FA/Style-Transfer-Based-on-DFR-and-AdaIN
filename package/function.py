@@ -43,3 +43,16 @@ def _AdaIN(cFeat, sFeat):
 def _mat_sqrt(mat):
     U, D, V = svd(mat)
     return mm(mm(U, D.pow(0.5).diag()), V.t())
+
+
+def _adjust_learning_rate(optimizer, i: int, lr: float, decay: float):
+    """
+    Imitating the original implementation
+
+    PARAMETER:
+      @ i: iteration count
+      @ lr: learning rate
+    """
+    lr = lr / (1.0 + decay * i)
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr

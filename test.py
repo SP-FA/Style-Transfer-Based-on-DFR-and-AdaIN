@@ -17,12 +17,11 @@ from package import net
 
 
 def data_transform(size: int):
-    transform_list = []
+    transformList = []
     if size != 0:
-        transform_list.append(transforms.Resize(size))
-    transform_list.append(transforms.ToTensor())
-    transform = transforms.Compose(transform_list)
-    return transform
+        transformList.append(transforms.Resize(size))
+    transformList.append(transforms.ToTensor())
+    return transforms.Compose(transformList)
 
 
 def style_transfer(vgg, decoder, content, style, alpha: float):
@@ -41,14 +40,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--content', type=str, default='data/content', help='Folder path to content images')
-    parser.add_argument('--style',   type=str, default='data/style',   help='Folder path to style images')
+    parser.add_argument('--style',   type=str, default='data/style')
     parser.add_argument('--encoder', type=str, default='models/encoder.pth')
     parser.add_argument('--decoder', type=str, default='models/decoder.pth')
     parser.add_argument('--output',  type=str, default='output', help='Folder to save the output images')
 
     parser.add_argument('--content_size', type=int, default=512, help='New size for the content image')
-    parser.add_argument('--style_size',   type=int, default=512, help='New size for the style image')
-    parser.add_argument('--save_ext', type=str, default='.jpg', help='The extension name of the output image')
+    parser.add_argument('--style_size', type=int, default=512)
+    parser.add_argument('--save_ext', type=str, default='.jpg')
     parser.add_argument('--alpha', type=float, default=1.0, help='Controlling the degree of stylization. [0,1]')
     args = parser.parse_args()
 

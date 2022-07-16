@@ -4,6 +4,8 @@
 ![https://img.shields.io/badge/pytorch-1.11.0-yellow](https://img.shields.io/badge/Pytorch-1.11.0-yellow)
 ![https://img.shields.io/badge/CUDA-11.3-brightgreen](https://img.shields.io/badge/CUDA-11.3-brightgreen)
 
+[en-UK](../readme.md)
+
 ![../sources/cover.png](../sources/cover.png)
 
 ## Overview
@@ -42,6 +44,31 @@
 准备好风格图像和内容图像，它们的默认路径分别为 `./input/content` 和 `./input/style`
 
 ### Train
+
+运行如下命令以进行训练：
+
+```commandline
+python train.py [--content content_path --style style_path --encoder encoder_path]
+```
+
+可选的参数见下表：
+
+| 参数             | 说明                                |
+|----------------|-----------------------------------|
+| content        | 内容图像的路径                           |
+| style          | 风格图像的路径                           |
+| encoder        | 预训练模型的路径，默认为 `models/encoder.pth` |
+| save           | 模型保存路径，默认为 `experiments`          |
+| log            | 日志保存路径，默认为 `logs`                 |
+| lr             | 学习率                               |
+| decay          | 学习率的衰减率                           |
+| epoch          | 迭代次数                              |
+| batch          | The batch size                    |
+| content_weight | content loss 的权重                  |
+| style_weight   | style loss 的权重                    |
+| n_threads      | 启用的线程数                            |
+| save_interval  | 迭代多少次保存一次模型                       |
+
 
 ### Test
 
