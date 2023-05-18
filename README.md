@@ -8,6 +8,10 @@
 
 ![./sources/cover.png](./sources/cover.png)
 
+##### Abstract
+
+>Style transfer is an attractive point in recent years. This tech needs an image to provide its style, and a neural network is applied to transfer the style onto a content target. Most of the existing methods aim to obtain the weight parameters by training on a single image feature and continuously optimizing the network structure to improve the computational efficiency and image quality, but these methods only consider the image features from a certain perspective, which may lead to some information loss. In this paper, we add Deep Feature Rotation (DFR) to the AdaIN network, which enables us to generate multiple features from one image feature by rotation and train these features synthetically. By this method, we can perform comprehensive feature extraction on a stylized image to preserve more complete feature information. We have tried different combinations of angles and also compared them with other methods.
+
 ## Overview
 
 This is an image style transformation model. This model is based on `AdaIN` [1], and a `DFR` layer [2] is added between `VGG Encoder` and `AdaIN` to achieve better style conversion.
@@ -15,12 +19,6 @@ This is an image style transformation model. This model is based on `AdaIN` [1],
 The network structure is shown as follows:
 
 ![./sources/ourNet.png](./sources/ourNet.png)
-
-`DFR` is a method to extract multiple different features from a style image by rotating features from multiple angles [2]. In this experiment, we average the different features obtained by rotation, so as to obtain a more comprehensive feature information of the style image.
-
-The experiment process is shown as follows:
-
-![./sources/DFR.png](./sources/DFR.png)
 
 ## Results
 
@@ -93,5 +91,6 @@ Optional parameters are shown in the following table:
 
 ## Reference
 
-1. [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/pdf/1703.06868.pdf)
-2. [Deep Feature Rotation for Multimodal Image Style Transfer](https://arxiv.org/pdf/2202.04426.pdf)
+[1] [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/pdf/1703.06868.pdf)
+
+[2] [Deep Feature Rotation for Multimodal Image Style Transfer](https://arxiv.org/pdf/2202.04426.pdf)

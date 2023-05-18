@@ -8,6 +8,10 @@
 
 ![../sources/cover.png](../sources/cover.png)
 
+##### Abstract
+
+>图像风格迁移是近年来一个吸引人的研究方向。这种技术需要一张图像提供其风格，然后应用神经网络将该风格转移到目标图像上。大多数现有方法旨在通过对单个图像特征进行训练并持续优化网络结构来获得权重参数，以提高计算效率和图像质量，但这些方法仅从特定角度考虑图像特征，可能会导致一些信息丢失。在本文中，我们将深度特征旋转（DFR）添加到 AdaIN 网络中，这使我们能够通过旋转生成多个特征，进而合成训练这些特征。通过这种方法，我们可以对风格图像进行全面的特征提取，以保留更完整的特征信息。我们尝试了不同的角度组合，并与其他方法进行了比较。
+
 ## Overview
 
 这是一个图像风格转换模型。此模型以 `AdaIN` 为基础 [1]，在 `VGG Encoder` 和 `AdaIN` 之间加入了 `DFR` 层 [2] 以实现效果更好的风格转换。
@@ -15,12 +19,6 @@
 网络结构如下图：
 
 ![../sources/ourNet.png](../sources/ourNet.png)
-
-`DFR` 是将特征进行多个角度旋转以从一张风格图像提取多个不同特征的方法 [2]。在本实验中，我们把旋转得到的不同特征取平均值，由此得到一张风格图像更加全面的特征信息。
-
-实现过程如下图：
-
-![../sources/DFR.png](../sources/DFR.png)
 
 ## Results
 
@@ -94,5 +92,6 @@ python test.py [--content content_path --style style_path]
 
 ## Reference
 
-1. [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/pdf/1703.06868.pdf)
-2. [Deep Feature Rotation for Multimodal Image Style Transfer](https://arxiv.org/pdf/2202.04426.pdf)
+[1] [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/pdf/1703.06868.pdf)
+
+[2] [Deep Feature Rotation for Multimodal Image Style Transfer](https://arxiv.org/pdf/2202.04426.pdf)
