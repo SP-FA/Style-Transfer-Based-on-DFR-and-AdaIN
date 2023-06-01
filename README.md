@@ -29,7 +29,7 @@ The following is a comparison of our results with other algorithms, where:
 
 ![./sources/compare.png](./sources/compare.png)
 
-## Getting started
+## Get started
 
 ### Installation
 
